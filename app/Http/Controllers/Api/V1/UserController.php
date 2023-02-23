@@ -135,6 +135,7 @@ class UserController extends BaseController
             $data["type"] = "matricule";
             $data["matricule"] = DB::select( DB::raw("select * from ps_cart_rule where matricule = :request"), array('request' =>$request->code));
             if($data["matricule"]){
+                $data["matricule"] = $data["matricule"][0];
                 $data["customer"] = DB::select( DB::raw("select * from ps_customer where matricule = :requests"), array('requests' =>$request->code));
                 if($data["customer"]){
                     $data["result"] = "201";
