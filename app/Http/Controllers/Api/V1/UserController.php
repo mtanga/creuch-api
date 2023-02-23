@@ -56,7 +56,16 @@ class UserController extends BaseController
             $datas = DB::select( DB::raw("select * from ps_cart_rule where id_customer=:customer and code = :request"), array('customer'=>0, 'request' =>$request->code));
             if($datas){
                 $data["result"] = "202";
-                $data["matricule"] = $datas[0];
+                //
+                $matricules = $datas;
+                foreach ($matricules as $value) {
+                    $existMatricule = DB::select( DB::raw("select * from ps_customer where matricule = :requests"), array('requests'=>$value->matricule));
+                    if(empty($existMatricule)){
+                        $data["matricule"] = $value;
+                        break; 
+                    }
+                }
+                //$data["customer"] = DB::select( DB::raw("select * from ps_customer where matricule = :requests"), array('requests' =>$request->matricule));
             }
             else{
                 $data["result"] = "203";
@@ -147,7 +156,15 @@ class UserController extends BaseController
                 $datas = DB::select( DB::raw("select * from ps_cart_rule where id_customer=:customer and code = :request"), array('customer'=>0, 'request' =>$request->code));
                 if($datas){
                     $data["result"] = "202";
-                    $data["matricule"] = $datas[0];
+                    //$data["matricule"] = $datas[0];
+                    $matricules = $datas;
+                    foreach ($matricules as $value) {
+                        $existMatricule = DB::select( DB::raw("select * from ps_customer where matricule = :requests"), array('requests'=>$value->matricule));
+                        if(empty($existMatricule)){
+                            $data["matricule"] = $value;
+                            break; 
+                        }
+                    }
                 }
                 else{
                     $data["result"] = "203";
