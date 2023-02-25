@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\V1\BaseController as BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator;
-use Illuminate\Support\Facades\DB;
+ 
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Str;
@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use Carbon\Carbon;
 use App\Mail\SendMail;
+use App\Mail\ContactMail;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\MailNotify;
 class UserController extends BaseController
@@ -116,6 +117,24 @@ class UserController extends BaseController
             return response()->json(['message' => 'Mail Sent fail'], 400);
         } */
         //return $datas["result"]= $request->number." matricules générés avec succès";
+    }
+
+    public function contact(Request $request)
+    {
+        $title = "Nouvelle demande d'inscription";
+        $customer_details = [
+            'name' => $request->firstname.' '.$request->lastname,
+            'cse' => $request->cse,
+            'emailAdmin' => ["team@inno-angels.com", "bonjour@creuch.fr"],
+            'email' => $request->email,
+        ];
+        $order_details = "";
+        $sendmail = Mail::to($customer_details['emailAdmin'])->send(new ContactMail($title, $customer_details, $order_details));
+        if (empty($sendmail)) {
+            return response()->json(['message' => 'Mail Sent Sucssfully'], 200);
+        }else{
+            return response()->json(['message' => 'Mail Sent fail'], 400);
+        } 
     }
 
     public function generateRandomNumber($length = 8)
