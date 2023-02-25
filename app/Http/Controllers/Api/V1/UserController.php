@@ -131,9 +131,16 @@ class UserController extends BaseController
         $order_details = "";
         $sendmail = Mail::to($customer_details['emailAdmin'])->send(new ContactMail($title, $customer_details, $order_details));
         if (empty($sendmail)) {
-            return response()->json(['message' => 'Mail Sent Sucssfully'], 200);
+            return response()->json(
+                [
+                'message' => 'Mail Sent Sucssfully',
+                'status' => '200'
+            ], 200);
         }else{
-            return response()->json(['message' => 'Mail Sent fail'], 400);
+            return response()->json([
+                'message' => 'Mail Sent fail',
+                'status' => '400'    
+            ], 400);
         } 
     }
 
