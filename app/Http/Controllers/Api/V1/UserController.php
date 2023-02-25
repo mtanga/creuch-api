@@ -56,13 +56,14 @@ class UserController extends BaseController
         if($data["code"]){
             $datas = DB::select( DB::raw("select * from ps_cart_rule where id_customer=:customer and code = :request"), array('customer'=>0, 'request' =>$request->code));
             if($datas){
-                $data["result"] = "202";
+                $data["result"] = "205";
                 //
                 $matricules = $datas;
                 foreach ($matricules as $value) {
                     $existMatricule = DB::select( DB::raw("select * from ps_customer where matricule = :requests"), array('requests'=>$value->matricule));
                     if(empty($existMatricule)){
                         $data["matricule"] = $value;
+                        $data["result"] = "202";
                         break; 
                     }
                 }
