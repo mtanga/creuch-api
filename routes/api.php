@@ -27,5 +27,9 @@ Route::post('generate_matricule', [UserController::class, 'generate_matricule'])
 Route::post('checkcode', [UserController::class, 'checkcode']);
 
 Route::post('contact', [UserController::class, 'contact']);
+Route::post('groupuser', [UserController::class, 'groupuser']);
+Route::post('categegoriesuser', [UserController::class, 'categegoriesuser']);
 
 Route::post('check_code_or_matricule', [UserController::class, 'check_code_or_matricule']);
+
+Route::post('import_matricule', [UserController::class, 'import_matricule']);

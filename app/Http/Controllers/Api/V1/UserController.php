@@ -79,6 +79,113 @@ class UserController extends BaseController
         return $data;
     }
 
+    public function categegoriesuser(Request $request){
+
+        $groupCategories = DB::table('ps_category_group')
+        ->where('id_group', $request->group)
+       // ->where('id_category', $value->id_category)
+        ->get();
+
+        //return $groupCategories;
+
+          $categories = [];
+
+          $products= [];
+
+
+          $associations = [
+            "categories" => $categories,
+            "products" => $products
+          ];
+
+        $getCategories = DB::table('ps_category')->get();
+        foreach ($getCategories as $value) {
+         //   if($this->checkCategoryGroup($request->group, $value->id_category)==true){
+            
+            $catedgoriesDetails = DB::table('ps_category_lang')
+            ->where('id_category', $value->id_category)
+            ->get();
+            if($catedgoriesDetails){
+                $catedgoriesDetails = $catedgoriesDetails[0];
+            }
+
+
+            $groupCategories = DB::table('ps_category_group')
+            ->where('id_group', $request->group)
+            ->where('id_category', $value->id_category)
+            ->first();
+
+
+            $item = [
+                "sff" => $groupCategories,
+                "id" => $value->id_category,
+                "id_parent" => $value->id_parent,
+                "level_depth" => $value->level_depth,
+                "nb_products_recursive" => "882",
+                "active" => $value->active,
+                "id_shop_default" => $value->id_shop_default,
+                "is_root_category" => $value->is_root_category,
+                "position" => $value->position,
+                "date_add" => $value->date_add,
+                "date_upd" => $value->date_upd,
+                "name" => $catedgoriesDetails->name,
+                "link_rewrite" => $catedgoriesDetails->link_rewrite,
+                "description" => $catedgoriesDetails->description,
+                "meta_title" => $catedgoriesDetails->meta_title,
+                "meta_description" => $catedgoriesDetails->meta_description,
+                "meta_keywords" => $catedgoriesDetails->meta_keywords,
+                "custom_field" => $value->custom_field,
+                "date_end" => $value->date_end,
+                "date_start" =>  $value->date_start,
+                "description_sondage" =>  $value->description_sondage,
+                "remise" =>  $value->remise,
+                "franco" => $value->franco,
+                "cashback" =>  $value->cashback,
+                "date_livraison" =>  $value->date_livraison,
+                "associations" =>  $associations
+            ];
+            array_push($categories, $item);
+            }
+
+       // }
+        return $categories;
+    }
+
+
+    public function checkCategoryGroup($group, $category){
+        $groupCategories = DB::table('ps_category_group')
+        ->where('id_group', $group)
+        ->where('id_category', $category)
+        ->get();
+        return $groupCategories;
+
+    }
+
+    public function groupuser(Request $request){
+        $data["user"] = DB::select( 
+            DB::raw("select * from ps_customer_group where id_customer = :request and id_group = :requests"),
+            array('request' =>$request->customer, 'requests' =>$request->group));
+        if(!$data["user"]){
+            $data["groupuser"] = DB::table('ps_customer_group')->insert(
+                [
+                 'id_customer' => $request->customer,
+                 'id_group' => $request->group,
+                ]
+            );
+            $data["result"] = "202";
+        }
+        else{
+            $data["result"] = "201";
+        }
+        return $data;
+    }
+
+    public function import_matricule(Request $request){
+
+        
+    }
+
+
     public function generate_matricule(Request $request)
     {
         for ($x = 0; $x < $request->number; $x++) {
