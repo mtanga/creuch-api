@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\PayController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -32,4 +33,6 @@ Route::post('categegoriesuser', [UserController::class, 'categegoriesuser']);
 
 Route::post('check_code_or_matricule', [UserController::class, 'check_code_or_matricule']);
 
-Route::post('import_matricule', [UserController::class, 'import_matricule']);
+
+Route::post('pointretraits', [UserController::class, 'pointretraits']);
+Route::post('payement', [PayController::class, 'payement']);

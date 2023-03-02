@@ -81,26 +81,21 @@ class UserController extends BaseController
 
     public function categegoriesuser(Request $request){
 
-        $groupCategories = DB::table('ps_category_group')
-        ->where('id_group', $request->group)
-       // ->where('id_category', $value->id_category)
-        ->get();
+        $query = 'SELECT DISTINCT ps_category.*, ps_category_group.* FROM ps_category, ps_category_group WHERE ps_category_group.id_group="'.$request->group.'" AND ps_category.id_category = ps_category_group.id_category';
+        //$query = 'SELECT DISTINCT ps_category.*, ps_category_group.* FROM ps_category, ps_category_group WHERE ps_category_group.id_group='.$request->group;
+        $getCategories = DB::select( DB::raw($query));
 
-        //return $groupCategories;
+       // return $getCategories;
 
           $categories = [];
 
-          $products= [];
-
-
-          $associations = [
-            "categories" => $categories,
-            "products" => $products
-          ];
-
-        $getCategories = DB::table('ps_category')->get();
         foreach ($getCategories as $value) {
-         //   if($this->checkCategoryGroup($request->group, $value->id_category)==true){
+
+
+           $subcategories = [];
+           $products= [];
+           
+
             
             $catedgoriesDetails = DB::table('ps_category_lang')
             ->where('id_category', $value->id_category)
@@ -109,16 +104,35 @@ class UserController extends BaseController
                 $catedgoriesDetails = $catedgoriesDetails[0];
             }
 
+            $query = 'SELECT id_category FROM ps_category WHERE id_parent='.$value->id_category;
+            $subcategories = DB::select( DB::raw($query));
+            //$subcategories= [];
 
-            $groupCategories = DB::table('ps_category_group')
-            ->where('id_group', $request->group)
-            ->where('id_category', $value->id_category)
-            ->first();
+   
 
-
+            $queryp = '
+            SELECT SQL_CALC_FOUND_ROWS p.id_product  AS id_product
+            FROM  ps_product p 
+            LEFT JOIN ps_product_lang pl ON (pl.id_product = p.id_product AND pl.id_lang = 1 AND pl.id_shop = 1) 
+            LEFT JOIN ps_stock_available sav ON (sav.id_product = p.id_product AND sav.id_product_attribute = 0 AND sav.id_shop = 1  AND sav.id_shop_group = 0 ) 
+            JOIN ps_product_shop sa ON (p.id_product = sa.id_product AND sa.id_shop = 1) 
+            LEFT JOIN ps_category_lang cl ON (sa.id_category_default = cl.id_category AND cl.id_lang = 1 AND cl.id_shop = 1) 
+            LEFT JOIN ps_category c ON (c.id_category = cl.id_category) 
+            LEFT JOIN ps_shop shop ON (shop.id_shop = 1) 
+            LEFT JOIN ps_image_shop image_shop ON (image_shop.id_product = p.id_product AND image_shop.cover = 1 AND image_shop.id_shop = 1) 
+            LEFT JOIN ps_image i ON (i.id_image = image_shop.id_image) 
+            LEFT JOIN ps_product_download pd ON (pd.id_product = p.id_product) 
+            INNER JOIN ps_category_product cp ON (cp.id_product = p.id_product AND cp.id_category = "'.$value->id_category.'") 
+            WHERE (1 AND state = 1)
+            
+            ORDER BY  id_product desc
+            ';
+            $products = DB::select( DB::raw($queryp));
+            
+     
             $item = [
-                "sff" => $groupCategories,
                 "id" => $value->id_category,
+                "group" => $value->id_group,
                 "id_parent" => $value->id_parent,
                 "level_depth" => $value->level_depth,
                 "nb_products_recursive" => "882",
@@ -141,8 +155,12 @@ class UserController extends BaseController
                 "remise" =>  $value->remise,
                 "franco" => $value->franco,
                 "cashback" =>  $value->cashback,
+                "image" =>  'https://prod.creuch.fr/c/'.$value->id_category.'-small_default/'.$catedgoriesDetails->link_rewrite.'.jpg',
                 "date_livraison" =>  $value->date_livraison,
-                "associations" =>  $associations
+                "associations" =>  [
+                    "categories" => $subcategories,
+                    "products" => $products
+                  ]
             ];
             array_push($categories, $item);
             }
@@ -152,13 +170,13 @@ class UserController extends BaseController
     }
 
 
-    public function checkCategoryGroup($group, $category){
-        $groupCategories = DB::table('ps_category_group')
-        ->where('id_group', $group)
-        ->where('id_category', $category)
-        ->get();
-        return $groupCategories;
-
+    public function checkCategoryGroup($group, $category, $groups){
+            foreach($groups as $arr_val){
+              if($arr_val->id_group == $group && $arr_val->id_category == $category){
+                return true;
+              }
+            }
+            return false;
     }
 
     public function groupuser(Request $request){
@@ -180,9 +198,12 @@ class UserController extends BaseController
         return $data;
     }
 
-    public function import_matricule(Request $request){
+    public function pointretraits(Request $request){
+       // return $request->group;
+        $query = 'SELECT DISTINCT ps_carrier.*, ps_carrier_group.* FROM ps_carrier , ps_carrier_group WHERE ps_carrier_group.id_group = "'.$request->group.'" AND ps_carrier.id_carrier = ps_carrier_group.id_carrier';
+        $carriers = DB::select( DB::raw($query));
+        return $carriers;
 
-        
     }
 
 
