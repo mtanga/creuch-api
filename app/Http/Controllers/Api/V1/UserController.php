@@ -81,11 +81,11 @@ class UserController extends BaseController
 
     public function categegoriesuser(Request $request){
 
-        $query = 'SELECT DISTINCT ps_category.*, ps_category_group.* FROM ps_category, ps_category_group WHERE ps_category_group.id_group="'.$request->group.'" AND ps_category.id_category = ps_category_group.id_category';
+        $query = 'SELECT DISTINCT ps_category.*, ps_category_group.* FROM ps_category, ps_category_group WHERE ps_category_group.id_group="'.$request->group.'" AND ps_category.id_category = ps_category_group.id_category AND ps_category.active = 1';
         //$query = 'SELECT DISTINCT ps_category.*, ps_category_group.* FROM ps_category, ps_category_group WHERE ps_category_group.id_group='.$request->group;
         $getCategories = DB::select( DB::raw($query));
 
-       // return $getCategories;
+        //return $getCategories;
 
           $categories = [];
 
@@ -133,7 +133,8 @@ class UserController extends BaseController
             $item = [
                 "id" => $value->id_category,
                 "group" => $value->id_group,
-                "id_parent" => $value->id_parent,
+                "trouves" => count($getCategories),
+                "id_parent" => strval($value->id_parent),
                 "level_depth" => $value->level_depth,
                 "nb_products_recursive" => "882",
                 "active" => $value->active,
