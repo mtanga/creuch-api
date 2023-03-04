@@ -35,7 +35,7 @@ class ProductController extends BaseController
 
 
         //Get subcategories with group
-        $query2 = 'SELECT DISTINCT ps_category.*, ps_category_group.* FROM ps_category, ps_category_group WHERE ps_category_group.id_group="'.$request->group.'" AND ps_category.id_category = ps_category_group.id_category AND ps_category.active = 1';
+        $query2 = 'SELECT DISTINCT ps_category.*, ps_category_group.* FROM ps_category, ps_category_group WHERE ps_category_group.id_group="'.$request->group.'" AND ps_category.id_category = ps_category_group.id_category AND ps_category.active = 1 AND level_depth=3';
         $subctegories = DB::select( DB::raw($query2));
         //return $subctegories;
 
