@@ -48,14 +48,16 @@ class PayController extends BaseController
             ],
         ]);
 
-        
+        $data["token"] = $token;
+         
 
         } 
         catch (\Exception $ex) {
-            //return $ex->getMessage();
-             $token['error'] = $e->getMessage();
+             return $ex->getMessage();
          }
-         return $token;
+
+
+        return $data;
 
     }
 

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\PayController;
+use App\Http\Controllers\Api\V1\ProductController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -29,7 +30,8 @@ Route::post('checkcode', [UserController::class, 'checkcode']);
 
 Route::post('contact', [UserController::class, 'contact']);
 Route::post('groupuser', [UserController::class, 'groupuser']);
-Route::post('categegoriesuser', [UserController::class, 'categegoriesuser']);
+
+Route::post('categegoriesuser', [ProductController::class, 'categegoriesuser']);
 
 Route::post('check_code_or_matricule', [UserController::class, 'check_code_or_matricule']);
 

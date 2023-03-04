@@ -79,24 +79,52 @@ class UserController extends BaseController
         return $data;
     }
 
+
+
+    public function getParent($id, $getCategories){
+
+        for ($x = 0; $x < count($getCategories); $x++) {
+            if($getCategories[$x]->id_category == $id){
+                return false;
+            }
+        }
+
+        $queryParent = 'SELECT * FROM ps_category WHERE id_category='.$id;
+        $Parent = DB::select( DB::raw($queryParent));
+        return $Parent;
+    }
+
     public function categegoriesuser(Request $request){
 
-        $query = 'SELECT DISTINCT ps_category.*, ps_category_group.* FROM ps_category, ps_category_group WHERE ps_category_group.id_group="'.$request->group.'" AND ps_category.id_category = ps_category_group.id_category AND ps_category.active = 1';
+
+        //$query = 'SELECT DISTINCT ps_category.*, ps_category_group.* FROM ps_category, ps_category_group WHERE ps_category_group.id_group="'.$request->group.'" AND ps_category.id_category = ps_category_group.id_category AND ps_category.active = 1';
+        $query = 'SELECT * FROM ps_category WHERE active = 1 AND id_parent=2' ;
         //$query = 'SELECT DISTINCT ps_category.*, ps_category_group.* FROM ps_category, ps_category_group WHERE ps_category_group.id_group='.$request->group;
         $getCategories = DB::select( DB::raw($query));
+        return count($getCategories) ;
+
+        $subCategories = [];
+        for ($x = 0; $x < count($getCategories); $x++) {
+            if($getCategories[$x]->id_category == $id){
+                $query = 'SELECT DISTINCT ps_category.*, ps_category_group.* FROM ps_category, ps_category_group WHERE ps_category_group.id_group="'.$request->group.'" AND ps_category.id_category = ps_category_group.id_category AND ps_category.active = 1 AND id_parent='.$getCategories[$x]->id_category;
+                $subCategories = DB::select( DB::raw($query));
+            }
+        }
+
+
+
+       // return ;
+
+
 
         //return $getCategories;
 
           $categories = [];
 
         foreach ($getCategories as $value) {
-
-
-           $subcategories = [];
-           $products= [];
+            $subcategories = [];
+            $products= [];
            
-
-            
             $catedgoriesDetails = DB::table('ps_category_lang')
             ->where('id_category', $value->id_category)
             ->get();
@@ -164,6 +192,10 @@ class UserController extends BaseController
                   ]
             ];
             array_push($categories, $item);
+
+
+
+            
             }
 
        // }
