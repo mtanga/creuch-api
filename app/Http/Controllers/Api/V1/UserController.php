@@ -244,21 +244,25 @@ class UserController extends BaseController
     {
         for ($x = 0; $x < $request->number; $x++) {
             do {
-                $unique_code = $this->generateRandomNumber();
+                $len = $request->longueur;
+                $unique_code = $this->generateRandomNumber($len);
                 $data = DB::select( DB::raw("select * from ps_cart_rule where matricule = :request"), array('request' => $unique_code));
                 $arr = (array)$data;
             } while ($arr);
+            $init = $request->initial ?? '';
             $data = DB::table('ps_cart_rule')->insert(
                 ['date_from' => Carbon::now()->format('Y-m-d'),
-                 'date_to' => Carbon::now()->format('Y-m-d'),
+                 'date_to' => "2025-12-31",
                  'code' => $request->cse,
                  'date_add' => Carbon::now()->format('Y-m-d'),
                  'date_upd' => Carbon::now()->format('Y-m-d'),
-                 'matricule' => $unique_code,
+                 'matricule' => $init.''.$unique_code,
                  'id_group' => $request->cse_code,
                  'quantity' => 1,
                  'quantity_per_user' => 1,
                  'partial_use' => 1,
+                 'active' => 1,
+                 'reduction_amount'=> $request->amount ?? 0,
                 ]
             );
             
@@ -306,7 +310,7 @@ class UserController extends BaseController
         } 
     }
 
-    public function generateRandomNumber($length = 8)
+    public function generateRandomNumber($length)
     {
         $random = "";
         srand((double) microtime() * 1000000);

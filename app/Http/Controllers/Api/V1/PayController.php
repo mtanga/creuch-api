@@ -105,12 +105,12 @@ class PayController extends BaseController
         $data["t_id"] = DB::select( DB::raw("select * from ps_order_payment where order_reference = :request"), array('request' =>$request->order_reference));
         if($data["t_id"]){
 
-            $data["transaction"] = DB::table('ps_order_payment')
-            ->where('order_reference',1)
+            $datas["transaction"] = DB::table('ps_order_payment')
+            ->where('order_reference', $request->order_reference)
             ->update(['transaction_id'=>$request->transaction_id]);
         }
         else{
-            $data["transaction"] = DB::table('ps_order_payment')->insert(
+            $datas["transaction"] = DB::table('ps_order_payment')->insert(
                 [
                  'id_currency' => $request->id_currency,
                  'date_add' => Carbon::now()->format('Y-m-d H:i:s'),
@@ -121,7 +121,7 @@ class PayController extends BaseController
                 ]
             );
         }
-        return $data["transaction"];
+        return $datas;
 
     }
 
