@@ -39,3 +39,4 @@ Route::post('check_code_or_matricule', [UserController::class, 'check_code_or_ma
 Route::post('pointretraits', [UserController::class, 'pointretraits']);
 Route::post('checkCard', [PayController::class, 'checkCard']);
 Route::post('makePayement', [PayController::class, 'makePayement']);
+Route::post('savetransaction', [PayController::class, 'savetransaction']);

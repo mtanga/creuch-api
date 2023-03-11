@@ -96,6 +96,33 @@ class PayController extends BaseController
             }
     
     
+
+
+
+    }
+
+    public function savetransaction(Request $request){
+        $data["t_id"] = DB::select( DB::raw("select * from ps_order_payment where order_reference = :request"), array('request' =>$request->order_reference));
+        if($data["t_id"]){
+
+            $data["transaction"] = DB::table('ps_order_payment')
+            ->where('order_reference',1)
+            ->update(['transaction_id'=>$request->transaction_id]);
+        }
+        else{
+            $data["transaction"] = DB::table('ps_order_payment')->insert(
+                [
+                 'id_currency' => $request->id_currency,
+                 'date_add' => Carbon::now()->format('Y-m-d H:i:s'),
+                 'payment_method' => "Module de paiement Stripe",
+                 'amount' => $request->amount,
+                 'transaction_id' => $request->transaction_id,
+                 'order_reference' => $request->order_reference
+                ]
+            );
+        }
+        return $data["transaction"];
+
     }
 
 
