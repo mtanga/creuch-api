@@ -267,22 +267,29 @@ class UserController extends BaseController
             );
             
         }
+
+
+        $querys = 'SELECT t1.id_seller, t2.id_customer, ps_customer.* FROM ps_customer, ps_kb_mp_custom_field_seller_mapping t1 INNER JOIN ps_kb_mp_seller t2 ON t1.id_seller = t2.id_seller WHERE t1.value="'.$request->cse.'" AND t1.id_field = 1 AND t2.approved = 1 AND ps_customer.id_customer=t2.id_customer;';
+        $customer = DB::select( DB::raw($querys));
+
+
+        //return $customer;
+
         $title = "Matricules générés avec succès sur Creuch";
         $customer_details = [
             'number' => $request->number,
-            'cse' => $request->cse,
+            'cse' => $customer[0]->firstname."(".$request->cse.")",
             'emailAdmin' => "team@inno-angels.com",
-            'emailCSE' => "",
+            'emailCSE' => $customer[0]->email,
+            'bon' => $request->amount ?? 0,
         ];
         $order_details = [];
+
+        $emails =  "team@inno-angels.com";
+        //$sendmail = Mail::to($customer_details['emailAdmin'])
+
         $sendmail = Mail::to($customer_details['emailAdmin'])->send(new SendMail($title, $customer_details, $order_details));
-       // $sendmail = Mail::to($customer_details['emailCSE'])->send(new SendMail($title, $request->number, $order_details));
-/*         if (empty($sendmail)) {
-            return response()->json(['message' => 'Mail Sent Sucssfully'], 200);
-        }else{
-            return response()->json(['message' => 'Mail Sent fail'], 400);
-        } */
-        //return $datas["result"]= $request->number." matricules générés avec succès";
+        $sendmail = Mail::to($customer_details['emailCSE'])->send(new SendMail($title, $customer_details, $order_details));
     }
 
     public function contact(Request $request)
