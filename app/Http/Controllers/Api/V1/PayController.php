@@ -32,7 +32,7 @@ class PayController extends BaseController
     private $stripe;
     public function __construct()
     {
-        $this->stripe = new StripeClient("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");
+        $this->stripe = new StripeClient("sk_test_51HoqVpCLraJWn74O6nWB3bSmzO40ikez0uiQYZyDpqo2yYUHQCUHoDcUqT9oLbySjVll7GfQv4QiCZtAMERsMTh300kUWq1NvG");
     }
     
     public function checkCard(Request $request)
@@ -65,7 +65,7 @@ class PayController extends BaseController
     public function makePayement(Request $request)
     {
         try {
-            Stripe::setApiKey('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');
+            Stripe::setApiKey('sk_test_51HoqVpCLraJWn74O6nWB3bSmzO40ikez0uiQYZyDpqo2yYUHQCUHoDcUqT9oLbySjVll7GfQv4QiCZtAMERsMTh300kUWq1NvG');
     
             $customer = Customer::create(array(
                 'email' => $request->email,
