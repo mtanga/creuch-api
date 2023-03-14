@@ -232,10 +232,16 @@ class UserController extends BaseController
     }
 
     public function pointretraits(Request $request){
-       // return $request->group;
-        $query = 'SELECT DISTINCT ps_carrier.*, ps_carrier_group.* FROM ps_carrier , ps_carrier_group WHERE ps_carrier_group.id_group = "'.$request->group.'" AND ps_carrier.id_carrier = ps_carrier_group.id_carrier';
-        $carriers = DB::select( DB::raw($query));
-        return $carriers;
+
+       // Get Seller id
+        $query = 'SELECT t1.id_seller, t2.id_customer FROM ps_kb_mp_custom_field_seller_mapping t1 INNER JOIN ps_kb_mp_seller t2 ON t1.id_seller = t2.id_seller WHERE t1.value="'.$request->cse.'" AND t1.id_field = 1 AND t2.approved = 1';
+        $carrier = DB::select( DB::raw($query));
+       // return $carrier[0]->id_seller;
+        if($carrier){
+            $querys = 'SELECT ps_carrier.*, ps_carrier.id_carrier, ps_kb_mp_seller_shipping.id_seller FROM ps_carrier, ps_kb_mp_seller_shipping WHERE ps_kb_mp_seller_shipping.id_carrier = ps_carrier.id_carrier AND ps_kb_mp_seller_shipping.id_seller = '.$carrier[0]->id_seller;
+            $carriers = DB::select( DB::raw($querys));
+            return $carriers;
+        }
 
     }
 
